@@ -1,0 +1,17 @@
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.csproj.AssemblyReference.cache
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.AssemblyInfoInputs.cache
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.AssemblyInfo.cs
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.csproj.CoreCompileInputs.cache
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\bin\Debug\net8.0\SistemaAeroportuario.exe
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\bin\Debug\net8.0\SistemaAeroportuario.deps.json
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\bin\Debug\net8.0\SistemaAeroportuario.runtimeconfig.json
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\bin\Debug\net8.0\SistemaAeroportuario.dll
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\bin\Debug\net8.0\SistemaAeroportuario.pdb
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaA.EFB24F95.Up2Date
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.dll
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\refint\SistemaAeroportuario.dll
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.pdb
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\SistemaAeroportuario.genruntimeconfig.cache
+C:\Users\default.LAPTOP-T08J1VQH\source\repos\Nyx-02\Tarea-6-Proyecto.json\SistemaAeroportuario\SistemaAeroportuario\obj\Debug\net8.0\ref\SistemaAeroportuario.dll
