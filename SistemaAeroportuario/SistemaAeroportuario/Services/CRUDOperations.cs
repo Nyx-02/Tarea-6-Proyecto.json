@@ -1,9 +1,46 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
+using System.Linq;
+using System.Reflection;
 
 public class CRUDOperations<T> where T : class, IJsonStorage, new()
 {
+    public void MenuCRUD()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"════════ GESTIÓN DE {typeof(T).Name.ToUpper()}S ════════");
+            Console.ResetColor();
+
+            Console.WriteLine("1. Agregar");
+            Console.WriteLine("2. Actualizar");
+            Console.WriteLine("3. Eliminar");
+            Console.WriteLine("4. Listar Todos");
+            Console.WriteLine("5. Regresar");
+            Console.Write("\nSeleccione: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int opcion))
+            {
+                ConsoleUtils.MostrarError("¡Debe ingresar un número!");
+                continue;
+            }
+
+            switch (opcion)
+            {
+                case 1: Agregar(); break;
+                case 2: Actualizar(); break;
+                case 3: Eliminar(); break;
+                case 4: Listar(); break;
+                case 5: return;
+                default: ConsoleUtils.MostrarError("Opción inválida."); break;
+            }
+        }
+    }
+
     public void Agregar()
     {
         try
@@ -13,78 +50,33 @@ public class CRUDOperations<T> where T : class, IJsonStorage, new()
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"══════ AGREGAR {typeof(T).Name.ToUpper()} ══════");
             Console.ResetColor();
-            Console.WriteLine();
+
+            // Lógica especial para Pasajero (vinculación con boleto)
+            if (typeof(T) == typeof(Pasajero))
+            {
+                Boleto.MostrarBoletosDisponibles();
+                var boletos = Boleto.ListarBoletosDisponibles();
+                if (!boletos.Any()) return;
+
+                Console.Write("\nIngrese código de boleto: ");
+                string codigoBoleto = Console.ReadLine();
+                var boleto = boletos.FirstOrDefault(b => b.CodigoBoleto == codigoBoleto);
+
+                if (boleto == null)
+                {
+                    ConsoleUtils.MostrarError("¡Boleto no encontrado!");
+                    return;
+                }
+                ((Pasajero)(object)entidad).NumeroBoleto = codigoBoleto;
+            }
+
             AsignarValores(entidad);
             entidad.SaveToJson();
-            ConsoleUtils.MostrarExito("Registro agregado exitosamente!");
+            ConsoleUtils.MostrarExito("¡Registro agregado exitosamente!");
         }
         catch (Exception ex)
         {
-            ConsoleUtils.MostrarError($"Error al agregar: {ex.Message}");
-        }
-    }
-
-    public void Buscar()
-    {
-        try
-        {
-            string identificador;
-            if (typeof(T) == typeof(Pasajero) || typeof(T) == typeof(Tripulacion))
-            {
-                Console.Write("\nIngrese Número de Identificación: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Vuelo))
-            {
-                Console.Write("\nIngrese Código de Vuelo (Ej: AV-101): ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Avion))
-            {
-                Console.Write("\nIngrese Matrícula (Ej: HR-A350): ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Aeropuerto))
-            {
-                Console.Write("\nIngrese Código IATA (Ej: TGU): ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Boleto))
-            {
-                Console.Write("\nIngrese Código de Boleto (Ej: B-001): ");
-                identificador = Console.ReadLine();
-            }
-            else
-            {
-                Console.Write("\nIngrese ID o código: ");
-                identificador = Console.ReadLine();
-            }
-
-            var encontrado = new T().LoadFromJson().FirstOrDefault(e =>
-                (e is Persona p && p.NumeroIdentificacion == identificador) ||
-                (e is Vuelo v && v.CodigoVuelo == identificador) ||
-                (e is Avion a && a.Matricula == identificador) ||
-                (e is Aeropuerto ap && ap.CodigoIATA == identificador) ||
-                (e is Boleto b && b.CodigoBoleto == identificador));
-
-            if (encontrado == null)
-            {
-                ConsoleUtils.MostrarError("Registro no encontrado");
-                return;
-            }
-
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"══════ DETALLES DEL REGISTRO ══════");
-            Console.ResetColor();
-            Console.WriteLine();
-            MostrarRegistro(encontrado);
-            Console.WriteLine("\nPresione cualquier tecla para continuar...");
-            Console.ReadKey();
-        }
-        catch (Exception ex)
-        {
-            ConsoleUtils.MostrarError($"Error al buscar: {ex.Message}");
+            ConsoleUtils.MostrarError($"Error: {ex.Message}");
         }
     }
 
@@ -92,67 +84,44 @@ public class CRUDOperations<T> where T : class, IJsonStorage, new()
     {
         try
         {
-            string identificador;
-            if (typeof(T) == typeof(Pasajero) || typeof(T) == typeof(Tripulacion))
-            {
-                Console.Write("\nIngrese Número de Identificación: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Vuelo))
-            {
-                Console.Write("\nIngrese Código de Vuelo: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Avion))
-            {
-                Console.Write("\nIngrese Matrícula: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Aeropuerto))
-            {
-                Console.Write("\nIngrese Código IATA: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Boleto))
-            {
-                Console.Write("\nIngrese Código de Boleto: ");
-                identificador = Console.ReadLine();
-            }
-            else
-            {
-                Console.Write("\nIngrese ID o código: ");
-                identificador = Console.ReadLine();
-            }
-
-            var entidades = new T().LoadFromJson().Cast<object>().ToList();
-            var entidad = entidades.FirstOrDefault(e =>
-                (e is Persona p && p.NumeroIdentificacion == identificador) ||
-                (e is Vuelo v && v.CodigoVuelo == identificador) ||
-                (e is Avion a && a.Matricula == identificador) ||
-                (e is Aeropuerto ap && ap.CodigoIATA == identificador) ||
-                (e is Boleto b && b.CodigoBoleto == identificador));
-
-            if (entidad == null)
-            {
-                ConsoleUtils.MostrarError("Registro no encontrado");
-                return;
-            }
-
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"══════ ACTUALIZAR {typeof(T).Name.ToUpper()} ══════");
             Console.ResetColor();
+
+            // Mostrar lista previa para selección
+            Listar(mostrarSoloResumen: true);
+
+            Console.Write("\nIngrese ID/código a actualizar: ");
+            string id = Console.ReadLine();
+
+            var entidad = BuscarPorId(id);
+            if (entidad == null)
+            {
+                ConsoleUtils.MostrarError("¡Registro no encontrado!");
+                return;
+            }
+
             Console.WriteLine("\nDATOS ACTUALES:");
             MostrarRegistro(entidad);
             Console.WriteLine("\nINGRESE NUEVOS DATOS:");
             AsignarValores(entidad);
 
-            File.WriteAllText($"{typeof(T).Name}.json", JsonConvert.SerializeObject(entidades.Take(100)));
-            ConsoleUtils.MostrarExito("Registro actualizado exitosamente!");
+            // Guardar cambios
+            var todos = new T().LoadFromJson();
+            var index = todos.FindIndex(e =>
+                e is Vuelo v && v.CodigoVuelo == id ||
+                e is Pasajero p && p.NumeroBoleto == id ||
+                e is Avion a && a.Matricula == id
+            );
+            todos[index] = entidad;
+            File.WriteAllText($"{typeof(T).Name}.json", JsonConvert.SerializeObject(todos));
+
+            ConsoleUtils.MostrarExito("¡Registro actualizado!");
         }
         catch (Exception ex)
         {
-            ConsoleUtils.MostrarError($"Error al actualizar: {ex.Message}");
+            ConsoleUtils.MostrarError($"Error: {ex.Message}");
         }
     }
 
@@ -160,196 +129,110 @@ public class CRUDOperations<T> where T : class, IJsonStorage, new()
     {
         try
         {
-            string identificador;
-            if (typeof(T) == typeof(Pasajero) || typeof(T) == typeof(Tripulacion))
-            {
-                Console.Write("\nIngrese Número de Identificación: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Vuelo))
-            {
-                Console.Write("\nIngrese Código de Vuelo: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Avion))
-            {
-                Console.Write("\nIngrese Matrícula: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Aeropuerto))
-            {
-                Console.Write("\nIngrese Código IATA: ");
-                identificador = Console.ReadLine();
-            }
-            else if (typeof(T) == typeof(Boleto))
-            {
-                Console.Write("\nIngrese Código de Boleto: ");
-                identificador = Console.ReadLine();
-            }
-            else
-            {
-                Console.Write("\nIngrese ID o código: ");
-                identificador = Console.ReadLine();
-            }
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"══════ ELIMINAR {typeof(T).Name.ToUpper()} ══════");
+            Console.ResetColor();
 
-            var entidades = new T().LoadFromJson().Cast<object>().ToList();
-            var entidad = entidades.FirstOrDefault(e =>
-                (e is Persona p && p.NumeroIdentificacion == identificador) ||
-                (e is Vuelo v && v.CodigoVuelo == identificador) ||
-                (e is Avion a && a.Matricula == identificador) ||
-                (e is Aeropuerto ap && ap.CodigoIATA == identificador) ||
-                (e is Boleto b && b.CodigoBoleto == identificador));
+            // Mostrar lista previa para selección
+            Listar(mostrarSoloResumen: true);
+
+            Console.Write("\nIngrese ID/código a eliminar: ");
+            string id = Console.ReadLine();
+
+            var todos = new T().LoadFromJson();
+            var entidad = todos.FirstOrDefault(e =>
+                e is Vuelo v && v.CodigoVuelo == id ||
+                e is Pasajero p && p.NumeroBoleto == id ||
+                e is Avion a && a.Matricula == id
+            );
 
             if (entidad == null)
             {
-                ConsoleUtils.MostrarError("Registro no encontrado");
+                ConsoleUtils.MostrarError("¡Registro no encontrado!");
                 return;
             }
 
-            entidades.Remove(entidad);
-            File.WriteAllText($"{typeof(T).Name}.json", JsonConvert.SerializeObject(entidades.Take(100)));
-            ConsoleUtils.MostrarExito("Registro eliminado exitosamente!");
+            todos.Remove(entidad);
+            File.WriteAllText($"{typeof(T).Name}.json", JsonConvert.SerializeObject(todos));
+            ConsoleUtils.MostrarExito("¡Registro eliminado!");
         }
         catch (Exception ex)
         {
-            ConsoleUtils.MostrarError($"Error al eliminar: {ex.Message}");
+            ConsoleUtils.MostrarError($"Error: {ex.Message}");
         }
     }
 
-    public void Listar()
+    public void Listar(bool mostrarSoloResumen = false)
     {
         try
         {
-            var entidades = new T().LoadFromJson();
+            var registros = new T().LoadFromJson();
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"══════ LISTADO DE {typeof(T).Name.ToUpper()}S ══════");
             Console.ResetColor();
-            Console.WriteLine();
 
-            if (!entidades.Any())
+            if (!registros.Any())
             {
-                Console.WriteLine("No hay registros disponibles.");
-                Console.WriteLine("\nPresione cualquier tecla para continuar...");
-                Console.ReadKey();
+                Console.WriteLine("\nNo hay registros.");
+                ConsoleUtils.PresioneParaContinuar();
                 return;
             }
 
-            foreach (var entidad in entidades)
+            foreach (var registro in registros)
             {
-                MostrarRegistro(entidad);
-                Console.WriteLine(new string('─', 50));
+                if (mostrarSoloResumen)
+                {
+                    // Mostrar solo información clave para selección
+                    Console.WriteLine($"- {ObtenerId(registro)}: {ObtenerNombreResumen(registro)}");
+                }
+                else
+                {
+                    MostrarRegistro(registro);
+                    Console.WriteLine(new string('─', 40));
+                }
             }
-            Console.WriteLine("\nPresione cualquier tecla para continuar...");
-            Console.ReadKey();
+
+            if (!mostrarSoloResumen)
+                ConsoleUtils.PresioneParaContinuar();
         }
         catch (Exception ex)
         {
-            ConsoleUtils.MostrarError($"Error al listar: {ex.Message}");
+            ConsoleUtils.MostrarError($"Error: {ex.Message}");
         }
     }
 
+    // --- Métodos auxiliares ---
     private void AsignarValores(object entidad)
     {
-        var propiedades = entidad.GetType().GetProperties();
+        var propiedades = entidad.GetType().GetProperties()
+            .Where(p => p.CanWrite && p.Name != "Id" && !p.PropertyType.IsGenericType);
+
         foreach (var prop in propiedades)
         {
-            if (!prop.CanWrite || prop.Name == "Id" || prop.Name == "HorasVueloTotales")
-                continue;
-
             while (true)
             {
                 try
                 {
-                    Console.Write($"{prop.Name.Replace("_", " ")}: ");
+                    Console.Write($"{prop.Name}: ");
                     string valor = Console.ReadLine();
 
-                    // Validación 1: Campo requerido
-                    if (string.IsNullOrWhiteSpace(valor))
+                    // Validaciones básicas
+                    if (string.IsNullOrWhiteSpace(valor)
                     {
-                        ConsoleUtils.MostrarError("¡Este campo es obligatorio!");
+                        ConsoleUtils.MostrarError("¡Campo requerido!");
                         continue;
                     }
 
-                    // Validación 2: Tipos de datos
+                    // Validar tipo de dato
                     if (prop.PropertyType == typeof(int) && !int.TryParse(valor, out _))
                     {
                         ConsoleUtils.MostrarError("¡Debe ser un número entero!");
                         continue;
                     }
 
-                    if (prop.PropertyType == typeof(DateTime) &&
-                       !DateTime.TryParseExact(valor, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
-                    {
-                        ConsoleUtils.MostrarError("¡Formato inválido! Use dd/MM/yyyy");
-                        continue;
-                    }
-
-                    if (prop.PropertyType == typeof(decimal) && !decimal.TryParse(valor, out _))
-                    {
-                        ConsoleUtils.MostrarError("¡Debe ser un valor decimal!");
-                        continue;
-                    }
-
-                    // Validación 3: Reglas específicas por campo
-                    switch (prop.Name)
-                    {
-                        case "Email":
-                            if (!Regex.IsMatch(valor, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                            {
-                                ConsoleUtils.MostrarError("¡Email inválido!");
-                                continue;
-                            }
-                            break;
-
-                        case "NumeroIdentificacion":
-                            if (valor.Length < 5)
-                            {
-                                ConsoleUtils.MostrarError("¡Mínimo 5 caracteres!");
-                                continue;
-                            }
-                            break;
-
-                        case "Genero":
-                            var opcionesGenero = new[] { "Masculino", "Femenino", "No Binario" };
-                            if (!opcionesGenero.Contains(valor))
-                            {
-                                ConsoleUtils.MostrarError($"Opciones válidas: {string.Join(", ", opcionesGenero)}");
-                                continue;
-                            }
-                            break;
-
-                        case "CodigoVuelo":
-                            if (!Regex.IsMatch(valor, @"^[A-Z]{2}-\d{3}$"))
-                            {
-                                ConsoleUtils.MostrarError("Formato inválido! Ej: AV-101");
-                                continue;
-                            }
-                            break;
-
-                        case "Matricula":
-                            if (!Regex.IsMatch(valor, @"^[A-Z]{2}-[A-Z]\d{3}$"))
-                            {
-                                ConsoleUtils.MostrarError("Formato inválido! Ej: HR-A350");
-                                continue;
-                            }
-                            break;
-
-                        case "FechaNacimiento":
-                            DateTime fechaNac = DateTime.ParseExact(valor, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                            int edad = DateTime.Now.Year - fechaNac.Year;
-                            if (edad < 18)
-                            {
-                                ConsoleUtils.MostrarError("¡Debe ser mayor de edad!");
-                                continue;
-                            }
-                            break;
-                    }
-
-                    // Asignación segura
-                    if (prop.PropertyType == typeof(bool))
-                        valor = valor.ToLower() == "si" ? "true" : "false";
-
+                    // Asignar valor
                     prop.SetValue(entidad, Convert.ChangeType(valor, prop.PropertyType));
                     break;
                 }
@@ -361,20 +244,45 @@ public class CRUDOperations<T> where T : class, IJsonStorage, new()
         }
     }
 
+    private object BuscarPorId(string id)
+    {
+        return new T().LoadFromJson().FirstOrDefault(e =>
+            e is Vuelo v && v.CodigoVuelo == id ||
+            e is Pasajero p && p.NumeroBoleto == id ||
+            e is Avion a && a.Matricula == id
+        );
+    }
+
+    private string ObtenerId(object entidad)
+    {
+        return entidad switch
+        {
+            Vuelo v => v.CodigoVuelo,
+            Pasajero p => p.NumeroBoleto,
+            Avion a => a.Matricula,
+            _ => "ID"
+        };
+    }
+
+    private string ObtenerNombreResumen(object entidad)
+    {
+        return entidad switch
+        {
+            Vuelo v => $"{v.Origen} → {v.Destino}",
+            Pasajero p => $"{p.Nombre} {p.Apellido}",
+            Avion a => a.Modelo,
+            _ => entidad.ToString()
+        };
+    }
+
     private void MostrarRegistro(object entidad)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
         foreach (var prop in entidad.GetType().GetProperties())
         {
-            if (prop.PropertyType == typeof(List<>) || prop.PropertyType.IsArray)
-                continue;
-
-            var valor = prop.GetValue(entidad);
-
-            if (valor is DateTime)
-                valor = ((DateTime)valor).ToString("dd/MM/yyyy HH:mm");
-
-            Console.WriteLine($"{prop.Name.Replace("_", " "),-25}: {valor}");
+            if (prop.PropertyType.IsGenericType) continue;
+            var valor = prop.GetValue(entidad)?.ToString() ?? "N/A";
+            Console.WriteLine($"{prop.Name.PadRight(15)}: {valor}");
         }
         Console.ResetColor();
     }

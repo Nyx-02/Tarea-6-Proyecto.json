@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\SistemaAeroportuario",
+    "\\SistemaAeroportuario\\Interfaces",
+    "\\SistemaAeroportuario\\Models",
+    "\\SistemaAeroportuario\\Services",
+    "\\SistemaAeroportuario\\Utils"
+  ],
+  "SelectedNode": "\\SistemaAeroportuario\\Services\\CRUDOperations.cs",
+  "PreviewInSolutionExplorer": false
+}

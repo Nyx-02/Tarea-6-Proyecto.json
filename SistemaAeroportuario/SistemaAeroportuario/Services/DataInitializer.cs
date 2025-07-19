@@ -2,11 +2,11 @@
 {
     public static void Initialize()
     {
-        new Pasajero().InitializeSampleData();
-        new Tripulacion().InitializeSampleData();
         new Vuelo().InitializeSampleData();
         new Avion().InitializeSampleData();
-        new Aeropuerto().InitializeSampleData();
+        new Pasajero().InitializeSampleData();
         new Boleto().InitializeSampleData();
+        new Tripulacion().InitializeSampleData();
+        new Aeropuerto().InitializeSampleData();
     }
 }

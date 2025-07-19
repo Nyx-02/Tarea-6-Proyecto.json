@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\SistemaAeroportuario",
+    "\\SistemaAeroportuario\\SistemaAeroportuario"
   ],
+  "SelectedNode": "\\SistemaAeroportuario\\SistemaAeroportuario\\SistemaAeroportuario.csproj",
   "PreviewInSolutionExplorer": false
 }

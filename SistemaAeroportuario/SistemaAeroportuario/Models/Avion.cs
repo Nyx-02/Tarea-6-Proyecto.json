@@ -1,29 +1,32 @@
-﻿// Models/Avion.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 public class Avion : IJsonStorage
 {
-    public string Matricula { get; set; }
+    public string Matricula { get; set; }  // Formato "XX-123"
     public string Modelo { get; set; }
-    public int CapacidadPasajeros { get; set; }
-    public int AnoFabricacion { get; set; }
-    public string EstadoMantenimiento { get; set; }
-    public string Aerolinea { get; set; }
-    public double HorasVueloTotales { get; set; }
+    public int CapacidadPasajeros { get; set; }  // Máximo 100
+    public string EstadoMantenimiento { get; set; }  // "Optimo" o "Reparación"
 
-    public bool NecesitaMantenimiento() => EstadoMantenimiento == "Pendiente";
-    public void ActualizarHorasVuelo(double horas) => HorasVueloTotales += horas;
-    public bool EsAvionComercial() => CapacidadPasajeros > 50;
+    public void ValidarMatricula()
+    {
+        while (!Regex.IsMatch(Matricula, @"^[A-Z]{2}-\d{3}$"))
+        {
+            ConsoleUtils.MostrarError("Formato inválido. Use: XX-123 (ej: HR-101)");
+            Console.Write("Matrícula: ");
+            Matricula = Console.ReadLine();
+        }
+    }
 
     public void SaveToJson()
     {
         var aviones = LoadFromJson().Cast<Avion>().ToList();
         aviones.Add(this);
-        File.WriteAllText("Avion.json", JsonConvert.SerializeObject(aviones.Take(100)));
+        File.WriteAllText("Avion.json", JsonConvert.SerializeObject(aviones));
     }
 
     public List<object> LoadFromJson()
@@ -40,22 +43,10 @@ public class Avion : IJsonStorage
             var sample = new List<Avion>
             {
                 new Avion {
-                    Matricula = "HR-A350",
-                    Modelo = "Boeing 737-800",
-                    CapacidadPasajeros = 160,
-                    AnoFabricacion = 2018,
-                    EstadoMantenimiento = "Optimo",
-                    Aerolinea = "Aerolínea Honduras",
-                    HorasVueloTotales = 12000
-                },
-                new Avion {
-                    Matricula = "HR-A320",
-                    Modelo = "Airbus A320",
-                    CapacidadPasajeros = 180,
-                    AnoFabricacion = 2019,
-                    EstadoMantenimiento = "Optimo",
-                    Aerolinea = "Aerolínea Honduras",
-                    HorasVueloTotales = 9000
+                    Matricula = "HR-101",
+                    Modelo = "Boeing 737",
+                    CapacidadPasajeros = 100,
+                    EstadoMantenimiento = "Optimo"
                 }
             };
             File.WriteAllText("Avion.json", JsonConvert.SerializeObject(sample));

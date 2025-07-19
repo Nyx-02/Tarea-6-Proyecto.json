@@ -1,5 +1,4 @@
-﻿// Models/Tripulacion.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,25 +6,27 @@ using Newtonsoft.Json;
 
 public class Tripulacion : Persona, IJsonStorage
 {
-    public string Cargo { get; set; }
-    public int HorasVuelo { get; set; }
-    public DateTime FechaContratacion { get; set; }
-    public string Licencia { get; set; }
-    public bool CertificadoMedico { get; set; }
-    public string Idiomas { get; set; }
+    public string Cargo { get; set; }  // "Piloto", "Asistente", "Ingeniero"
+    public string Licencia { get; set; }  // Auto-generada
     public bool Disponible { get; set; }
 
-    public override string ObtenerTipo() => "Tripulacion";
-
-    public bool ValidarLicencia() => !string.IsNullOrEmpty(Licencia) && Licencia.Length == 10;
-    public void AgregarHorasVuelo(int horas) => HorasVuelo += horas;
-    public bool EstaDisponible() => Disponible;
+    public void SeleccionarCargo()
+    {
+        string[] cargosValidos = { "Piloto", "Asistente", "Ingeniero" };
+        while (!cargosValidos.Contains(Cargo))
+        {
+            Console.WriteLine("Cargos válidos: " + string.Join(", ", cargosValidos));
+            Console.Write("Seleccione cargo: ");
+            Cargo = Console.ReadLine();
+        }
+        Licencia = $"LIC-{new Random().Next(1000, 9999)}";
+    }
 
     public void SaveToJson()
     {
         var tripulacion = LoadFromJson().Cast<Tripulacion>().ToList();
         tripulacion.Add(this);
-        File.WriteAllText("Tripulacion.json", JsonConvert.SerializeObject(tripulacion.Take(100)));
+        File.WriteAllText("Tripulacion.json", JsonConvert.SerializeObject(tripulacion));
     }
 
     public List<object> LoadFromJson()
@@ -42,16 +43,9 @@ public class Tripulacion : Persona, IJsonStorage
             var sample = new List<Tripulacion>
             {
                 new Tripulacion {
-                    TipoIdentificacion = "Licencia",
-                    NumeroIdentificacion = "T987654",
-                    Nombre = "Ana",
-                    Apellido = "Gomez",
-                    Nacionalidad = "Honduras",
-                    FechaNacimiento = new DateTime(1990, 8, 22),
-                    Genero = "Femenino",
-                    Email = "ana@aerolinea.com",
+                    Nombre = "Ana Gomez",
                     Cargo = "Piloto",
-                    HorasVuelo = 5000,
+                    Licencia = "LIC-1234",
                     Disponible = true
                 }
             };
