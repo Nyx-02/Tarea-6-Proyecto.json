@@ -52,4 +52,9 @@ public class Tripulacion : Persona, IJsonStorage
             File.WriteAllText("Tripulacion.json", JsonConvert.SerializeObject(sample));
         }
     }
+
+    public override void Agregar()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -219,7 +219,7 @@ public class CRUDOperations<T> where T : class, IJsonStorage, new()
                     string valor = Console.ReadLine();
 
                     // Validaciones básicas
-                    if (string.IsNullOrWhiteSpace(valor)
+                    if (string.IsNullOrWhiteSpace(valor))
                     {
                         ConsoleUtils.MostrarError("¡Campo requerido!");
                         continue;

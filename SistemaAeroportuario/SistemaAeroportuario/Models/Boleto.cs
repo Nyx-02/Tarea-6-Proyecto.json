@@ -13,6 +13,37 @@ public class Boleto : IJsonStorage
     public DateTime FechaEmision { get; set; }
     public bool CheckInCompletado { get; set; }
 
+    public static void MostrarBoletosDisponibles()
+    {
+        var boletos = ListarBoletosDisponibles();
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("════════ BOLETOS DISPONIBLES ════════");
+        Console.ResetColor();
+
+        if (!boletos.Any())
+        {
+            Console.WriteLine("\nNo hay boletos disponibles.");
+            ConsoleUtils.PresioneParaContinuar();
+            return;
+        }
+
+        foreach (var boleto in boletos)
+        {
+            Console.WriteLine($"- {boleto.CodigoBoleto} | Vuelo: {boleto.CodigoVuelo} | Clase: {boleto.Clase} | Precio: ${boleto.Precio}");
+        }
+        ConsoleUtils.PresioneParaContinuar();
+    }
+
+    public static List<Boleto> ListarBoletosDisponibles()
+    {
+        return File.Exists("Boleto.json")
+            ? JsonConvert.DeserializeObject<List<Boleto>>(File.ReadAllText("Boleto.json"))
+                .Where(b => !new Pasajero().LoadFromJson().Cast<Pasajero>().Any(p => p.NumeroBoleto == b.CodigoBoleto))
+                .ToList()
+            : new List<Boleto>();
+    }
+
     // Método para comprar boleto (completo)
     public static void ComprarBoleto()
     {
@@ -86,7 +117,6 @@ public class Boleto : IJsonStorage
         ConsoleUtils.MostrarExito($"¡Boleto {boleto.CodigoBoleto} comprado por ${precio}!");
     }
 
-    // Métodos de IJsonStorage (completos)
     public void SaveToJson()
     {
         var boletos = LoadFromJson().Cast<Boleto>().ToList();
@@ -117,10 +147,5 @@ public class Boleto : IJsonStorage
             };
             File.WriteAllText("Boleto.json", JsonConvert.SerializeObject(sample));
         }
-    }
-
-    internal static object ListarBoletosDisponibles()
-    {
-        throw new NotImplementedException();
     }
 }

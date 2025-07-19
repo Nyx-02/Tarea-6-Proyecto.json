@@ -17,25 +17,22 @@ public class Pasajero : Persona, IJsonStorage
         var boletos = Boleto.ListarBoletosDisponibles();
         if (!boletos.Any()) return;
 
-        Boleto boletoSeleccionado = null;
-        while (boletoSeleccionado == null)
-        {
-            Console.Write("\nIngrese código de boleto: ");
-            string codigo = Console.ReadLine().Trim().ToUpper();
-            boletoSeleccionado = boletos.FirstOrDefault(b => b.CodigoBoleto == codigo);
+        Console.Write("\nIngrese código de boleto: ");
+        string codigo = Console.ReadLine().Trim().ToUpper();
+        var boletoSeleccionado = boletos.FirstOrDefault(b => b.CodigoBoleto == codigo);
 
-            if (boletoSeleccionado == null)
-                ConsoleUtils.MostrarError("¡Código inválido o boleto ya asignado!");
+        if (boletoSeleccionado == null)
+        {
+            ConsoleUtils.MostrarError("¡Código inválido o boleto ya asignado!");
+            return;
         }
 
         this.NumeroBoleto = boletoSeleccionado.CodigoBoleto;
         this.VueloAsignado = boletoSeleccionado.CodigoVuelo;
+        this.TipoPasaje = boletoSeleccionado.Clase;
 
         Console.Write("Nombre: ");
         this.Nombre = Console.ReadLine();
-
-        Console.Write("Tipo de pasaje (Económica/Ejecutiva/Primera): ");
-        this.TipoPasaje = Console.ReadLine();
 
         this.SaveToJson();
         ConsoleUtils.MostrarExito($"Pasajero registrado con boleto {this.NumeroBoleto}!");
